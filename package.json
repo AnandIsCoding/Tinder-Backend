@@ -1,0 +1,24 @@
+{
+  "name": "practise_day1",
+  "version": "1.0.0",
+  "description": "starting backend journey with node express and mongoose",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
+  "keywords": [
+    "node",
+    "express",
+    "mongodb",
+    "mongoose",
+    "backend",
+    "mern"
+  ],
+  "author": "Anand jha",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.1",
+    "mongoose": "^8.7.1",
+    "nodemon": "^3.1.7"
+  }
+}
