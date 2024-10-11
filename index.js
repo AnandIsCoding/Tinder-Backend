@@ -24,12 +24,16 @@ app.get('/', (req, res) => {
 app.post('/signup', async (req, res) => {
     const user = new User(req.body);
     try {
+        // can create validateUserSignupData(req) by creating a new function instead of validation via schema level
+
+        // encrypt password using bycrypt
+        
         await user.save(); // Save the user and validate the schema
         res.status(201).send('Data successfully stored in the database');
     } catch (error) {
         if (error.name === 'ValidationError') {
-            // Send detailed validation error message
-            res.status(400).send('Validation error, enter correct values');
+            const messages = Object.values(error.errors).map(err => err.message);
+            res.status(400).send(`Validation error: ${messages.join(', ')}`);
         } else {
             // Handle other errors (e.g., database connection issues)
             res.status(500).send('An error occurred. Please try again later.');
@@ -67,10 +71,10 @@ app.get('/feed', async(req, res) =>{
 
 //app.delete
 
-app.delete('/delete', async(req, res) =>{
-    const userId = req.body._id;
-    const userAvailable = await User.find({_id : userId})
-    if(userAvailable.length === 0){
+app.delete('/delete/:_id', async(req, res) =>{
+    const userId = req.params?._id;
+    const userAvailable = await User.findById(userId)
+    if(!userAvailable){
         res.status(404).send('User not found');
         return;  //To prevent further execution if user not found.
     }    
@@ -85,24 +89,24 @@ app.delete('/delete', async(req, res) =>{
 })
 
 //update
-app.patch('/user', async (req, res) => {
-    const userId = req.body._id;
+app.patch('/user/:_id', async (req, res) => {
+    const userId = req.params?._id;
     const dataToBeUpdated = req.body;
 
     try {
         // Check if the user exists
-        const isUserAvailable = await User.find({ _id: userId });
-        if (isUserAvailable.length === 0) {
+        const UserAvailable = await User.findById(userId);
+        if (UserAvailable.length === 0) {
             return res.status(404).send('User Not Found');
         }
         // Update the user data
         await User.findByIdAndUpdate(userId, dataToBeUpdated, { new: true, runValidators:true});
-        res.status(200).send('Updated successfully');
+        return res.status(200).send('Updated successfully');
     } catch (error) {
         if(error.name === 'ValidationError'){
-            res.status(400).send('Validation Error, enter correct values');
+           return res.status(400).send('Validation Error, enter correct values');
         }
-        res.status(500).send('Try sometime later');
+        return res.status(500).send('Try sometime later');
     }
 });
 
