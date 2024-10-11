@@ -21,16 +21,23 @@ app.get('/', (req, res) => {
         res.send('Home page');
 })
 
-app.post('/signup', async(req,res) =>{
-    const user = new User(req.body)
-    try{
-        await user.save(user)
-        res.send('data successfully stored in database')
-    }catch(error){
-        res.send('Try sometime later');
-        console.log(error);
+app.post('/signup', async (req, res) => {
+    const user = new User(req.body);
+    try {
+        await user.save(); // Save the user and validate the schema
+        res.status(201).send('Data successfully stored in the database');
+    } catch (error) {
+        if (error.name === 'ValidationError') {
+            // Send detailed validation error message
+            res.status(400).send('Validation error, enter correct values');
+        } else {
+            // Handle other errors (e.g., database connection issues)
+            res.status(500).send('An error occurred. Please try again later.');
+        }
+        console.log('Error:', error);
     }
-})
+});
+
 
 app.get('/user', async(req, res)=>{
     const userEmail = req.body.email;
@@ -89,10 +96,12 @@ app.patch('/user', async (req, res) => {
             return res.status(404).send('User Not Found');
         }
         // Update the user data
-        await User.findByIdAndUpdate(userId, dataToBeUpdated, { new: true });
+        await User.findByIdAndUpdate(userId, dataToBeUpdated, { new: true, runValidators:true});
         res.status(200).send('Updated successfully');
     } catch (error) {
-        console.log(error);
+        if(error.name === 'ValidationError'){
+            res.status(400).send('Validation Error, enter correct values');
+        }
         res.status(500).send('Try sometime later');
     }
 });
