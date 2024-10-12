@@ -1,9 +1,17 @@
 const express = require('express')
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
 const app = express();
+const CookieParser = require('cookie-parser')
 const connectToDb = require("./configs/database")
 const User = require('./models/user')
-app.use(express.json() )
+const {validateSignUpData, validateLogindata} = require('./utils/validation')
+const {userAuthentication} = require('../Tinder/middlewares/userAuthentication')
+
+app.use(express.json())
+app.use(CookieParser())
+
 
 connectToDb()
     .then(()=>{
@@ -22,11 +30,27 @@ app.get('/', (req, res) => {
 })
 
 app.post('/signup', async (req, res) => {
-    const user = new User(req.body);
-    try {
-        // can create validateUserSignupData(req) by creating a new function instead of validation via schema level
+    const validationResult =  validateSignUpData(req)
+    // Validate the user data before saving it to the database
+    if(validationResult){
+       res.send(validationResult)
+    }
+    const { firstName, lastName, email, password, userimage, gender, age} = req.body    
 
-        // encrypt password using bycrypt
+    //encrypt password
+    const encryptedUserPassword = await bcrypt.hash(password, 10)
+    console.log(encryptedUserPassword)
+    
+    try {
+        const user = new User({
+            firstName,
+            lastName,
+            email,
+            password : encryptedUserPassword ,
+            userimage,
+            age,
+            gender
+        });         
         
         await user.save(); // Save the user and validate the schema
         res.status(201).send('Data successfully stored in the database');
@@ -42,84 +66,41 @@ app.post('/signup', async (req, res) => {
     }
 });
 
-
-app.get('/user', async(req, res)=>{
-    const userEmail = req.body.email;
-    try{
-        const allUser = await User.find({email : userEmail})
-        if(allUser.length === 0){
-            res.status(404).send('User not found');
-        }else{
-            res.send(allUser)
-        }        
-    }catch(error){
-        console.log(error)
-        res.status(404).send('Error')
+app.post('/login' , async(req,res) =>{
+    validateLogindata(req)
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if(!user){
+        return res.status(404).send('Invalid credentials')
+    }
+    const match = await bcrypt.compare(password, user.password);
+    
+    if(match) {
+        //create a jwt token nd add it to cookie, and send to user
+        var token = jwt.sign({ _id: user._id }, "Anand@Tinder.comstoken", {expiresIn : '7d'} );
+        res.cookie("token" , token, { expires: new Date(Date.now() + 604800000) })       
+        return res.send('login successfull !!!!!!')
+    }else{
+        return res.status(404).send('Invalid credentials')
     }
 })
 
-app.get('/feed', async(req, res) =>{
+app.get('/profile',userAuthentication, async(req,res) =>{
+    
+    // userAuthentication is a middleware which will run before /profile if it doesn't return any error than only /profile will execute req res
+   try{
+        const user = req.user;
+        res.send(user);
+   }catch(err){
+        res.status(404).send(err.message)
+   }
 
-    try{
-        const allUsers = await User.find({});
-        res.send(allUsers)
-    }catch(error){
-        res.status(404).send('No usrs found');
-        console.log(error)
-    }
+    
 })
-
-//app.delete
-
-app.delete('/delete/:_id', async(req, res) =>{
-    const userId = req.params?._id;
-    const userAvailable = await User.findById(userId)
-    if(!userAvailable){
-        res.status(404).send('User not found');
-        return;  //To prevent further execution if user not found.
-    }    
-    try{
-        await User.deleteOne({_id : userId})
-        res.send('User deleted successfully');
-
-    }catch(error){
-        console.log(error)
-        res.status(500).send('Try later')
-    }
-})
-
-//update
-app.patch('/user/:_id', async (req, res) => {
-    const userId = req.params?._id;
-    const dataToBeUpdated = req.body;
-
-    try {
-        // Check if the user exists
-        const UserAvailable = await User.findById(userId);
-        if (UserAvailable.length === 0) {
-            return res.status(404).send('User Not Found');
-        }
-        // Update the user data
-        await User.findByIdAndUpdate(userId, dataToBeUpdated, { new: true, runValidators:true});
-        return res.status(200).send('Updated successfully');
-    } catch (error) {
-        if(error.name === 'ValidationError'){
-           return res.status(400).send('Validation Error, enter correct values');
-        }
-        return res.status(500).send('Try sometime later');
-    }
-});
-
-
-
-
-
-
-
 
 
 
 app.get('*', (req,res) =>{
-    res.send('404 not found error page')
+    res.status(404).send('Not Found')
 })
 
