@@ -34,7 +34,7 @@ profileRouter.patch('/edit', userAuthentication, async (req, res) => {
             return res.status(400).send("You can change only 'firstName', 'lastName', 'age', 'gender', 'password' ");
         }
         
-        // Update only the allowed fields
+        // Update only the allowed fields 
         if (firstName) user.firstName = firstName;
         if (age) user.age = age;
         if (lastName) user.lastName = lastName;

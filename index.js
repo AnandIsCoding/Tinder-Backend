@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken')
 const app = express();
 const CookieParser = require('cookie-parser')
 const connectToDb = require("./configs/database")
-const User = require('./models/user')
+
 const {validateSignUpData, validateLogindata} = require('./utils/validation')
 const {userAuthentication} = require('../Tinder/middlewares/userAuthentication')
 
@@ -15,9 +15,12 @@ app.use(CookieParser())
 //import routers
 const authenticationRouter = require('./routers/authenticationRouter')
 const profileRouter = require('./routers/profileRouter')
+const connectionRequest = require('./routers/connectionRequest')
 
+//use Routers
 app.use('/', authenticationRouter)
 app.use('/profile', profileRouter)
+app.use('/request', connectionRequest)
 
 
 
