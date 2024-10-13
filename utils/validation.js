@@ -1,4 +1,5 @@
 const validator = require('validator');
+
 function validateSignUpData(req) {
     const { firstName, lastName, email, password, userimage, age, gender } = req.body;
 
@@ -47,8 +48,6 @@ function validateSignUpData(req) {
 
 function validateLogindata(req){
     const {  email, password } = req.body;
-
- 
     
     // Validate email
     if (!validator.isEmail(email, {
@@ -67,6 +66,7 @@ function validateLogindata(req){
     })) {
         return 'Password should be strong: at least 8 characters long, contain at least 1 lowercase, 1 uppercase, 1 number, and 1 special character.';
     }
+    return null;
 
 }
 

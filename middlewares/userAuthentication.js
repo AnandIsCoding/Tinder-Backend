@@ -14,7 +14,7 @@ const userAuthentication = async(req, res, next) =>{
     if(!token) return res.status(404).send('go Signup and login');
     jwt.verify(token, "Anand@Tinder.comstoken" , async (error, decoded) =>{
         if(error){
-            res.status(404).send('User not found')
+            return res.status(404).send('User not found')
         }
         const {_id} = decoded;
         //find user using id got from decoded
