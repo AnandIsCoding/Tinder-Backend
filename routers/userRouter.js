@@ -2,8 +2,9 @@ const express = require('express');
 const userRouter = express.Router(); 
 const { userAuthentication } = require('../middlewares/userAuthentication');
 const connectionModel = require('../models/connection');
+const User = require('../models/user');
 
-userRouter.get('/requests/received', userAuthentication, async (req, res) => {
+userRouter.get('/user/requests/received', userAuthentication, async (req, res) => {
     try {
         const loggedInUser = req.user;
         const connectionRequests = await connectionModel.find({
@@ -21,7 +22,7 @@ userRouter.get('/requests/received', userAuthentication, async (req, res) => {
     }
 });
 
-userRouter.get('/requests/connections', userAuthentication, async (req, res) => {
+userRouter.get('/user/requests/connections', userAuthentication, async (req, res) => {
     try {
         const loggedInUser = req.user;
         const allConnections = await connectionModel.find({
@@ -49,6 +50,41 @@ userRouter.get('/requests/connections', userAuthentication, async (req, res) => 
         res.status(400).send(error.message);
     }
 });
+
+userRouter.get("/feed", userAuthentication, async (req, res) => {
+    try {
+      const loggedInUser = req.user;
+  
+      const page = parseInt(req.query.page) || 1;
+      let limit = parseInt(req.query.limit) || 10;
+      limit = limit > 50 ? 50 : limit;
+      const skip = (page - 1) * limit;
+  
+      const connectionRequests = await connectionModel.find({
+        $or: [{ senderId: loggedInUser._id }, { receiverId: loggedInUser._id }],
+      }).select("senderId receiverId");
+  
+      const hideUsersFromFeed = new Set();
+      connectionRequests.forEach((req) => {
+        hideUsersFromFeed.add(req.senderId.toString());
+        hideUsersFromFeed.add(req.receiverId.toString());
+      });
+  
+      const users = await User.find({
+        $and: [
+          { _id: { $nin: Array.from(hideUsersFromFeed) } },
+          { _id: { $ne: loggedInUser._id } },
+        ],
+      })
+        .select("firstName lastName photoUrl age gender about skills")
+        .skip(skip)
+        .limit(limit);
+  
+      res.json({ data: users });
+    } catch (err) {
+      res.status(400).json({ message: err.message });
+    }
+  });
 
 
 module.exports = userRouter;

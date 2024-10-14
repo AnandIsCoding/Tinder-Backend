@@ -4,7 +4,7 @@ const {userAuthentication} = require('../middlewares/userAuthentication')
 const connectionModel = require('../models/connection')
 const connectionRequest = express.Router()
 
-connectionRequest.post('/send/:status/:receiverId', userAuthentication , async(req, res) =>{
+connectionRequest.post('/request/send/:status/:receiverId', userAuthentication , async(req, res) =>{
     
    try{
         const senderId = req.user._id;
@@ -49,7 +49,7 @@ connectionRequest.post('/send/:status/:receiverId', userAuthentication , async(r
    }
 })
 
-connectionRequest.post('/review/:status/:requestId', userAuthentication, async(req,res) =>{
+connectionRequest.post('/request/review/:status/:requestId', userAuthentication, async(req,res) =>{
     try{
         const loggedInUser = req.user;
         const {status, requestId} = req.params;

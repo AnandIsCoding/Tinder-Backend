@@ -8,7 +8,7 @@ const User = require('../models/user')
 const {validateSignUpData, validateLogindata} = require('../utils/validation')
 const {userAuthentication} = require('../middlewares/userAuthentication')
 
-profileRouter.get('/view', userAuthentication, async(req,res) =>{
+profileRouter.get('/profile/view', userAuthentication, async(req,res) =>{
     try{
        
         const user = req.user
@@ -18,7 +18,7 @@ profileRouter.get('/view', userAuthentication, async(req,res) =>{
     }
 })
 
-profileRouter.patch('/edit', userAuthentication, async (req, res) => {
+profileRouter.patch('/profile/edit', userAuthentication, async (req, res) => {
     try {
         const user = req.user;
         const { firstName, lastName,age, gender, password } = req.body;

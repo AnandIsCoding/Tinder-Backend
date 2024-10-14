@@ -21,9 +21,9 @@ const userRouter = require('./routers/userRouter')
 
 //use Routers
 app.use('/', authenticationRouter)
-app.use('/profile', profileRouter)
-app.use('/request', connectionRequest)
-app.use('/user', userRouter)
+app.use('/', profileRouter)
+app.use('/', connectionRequest)
+app.use('/', userRouter)
 
 
 
