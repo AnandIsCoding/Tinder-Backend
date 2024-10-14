@@ -20,7 +20,7 @@ authenticationRouter.post('/signup', async (req, res) => {
 
     //encrypt password
     const encryptedUserPassword = await bcrypt.hash(password, 10)
-    console.log(encryptedUserPassword)
+    
     
     try {
         const user = new User({

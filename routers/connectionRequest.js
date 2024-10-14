@@ -22,7 +22,7 @@ connectionRequest.post('/send/:status/:receiverId', userAuthentication , async(r
         //check if sender and receiver is same than return
 
         if (senderId.toString() === receiverId.toString()) {
-            console.log("Sender and Receiver IDs are the same."); // Log for debugging
+            
             return res.status(400).json({ message: 'Bad Request: Sender and Receiver cannot be the same.' });
         }
 
@@ -47,6 +47,51 @@ connectionRequest.post('/send/:status/:receiverId', userAuthentication , async(r
    catch(err){
        res.send(err.message)
    }
+})
+
+connectionRequest.post('/review/:status/:requestId', userAuthentication, async(req,res) =>{
+    try{
+        const loggedInUser = req.user;
+        const {status, requestId} = req.params;
+
+        //check for valid status
+        let allowedStatus = ['accepted' , 'rejected']
+        if (!allowedStatus.includes(status)) {
+            return res.status(400).json({ message: 'Invalid status. Please choose between "interested", "ignore", "accepted", or "rejected".' });
+        }
+
+        const conectionRequestReview = await connectionModel.findOne({
+            _id: requestId,
+            receiverId: loggedInUser._id,
+            status:"interested"
+        })
+
+       // Find the connection request
+       const connectionRequestReview = await connectionModel.findOne({
+        _id: requestId,
+        receiverId: loggedInUser._id,
+        status: 'interested' // Only allow reviewing requests with "interested" status
+    });
+
+    if (!connectionRequestReview) {
+        return res.status(404).json({ message: 'Connection request not found or already reviewed.' });
+    }
+
+    // Update the status
+    connectionRequestReview.status = status;
+
+    // Save the updated connection request
+    const updatedConnectionRequest = await connectionRequestReview.save();
+
+    // Respond with success
+    res.json({
+        message: 'Review submitted successfully',
+        data: updatedConnectionRequest
+    });
+        
+    }catch(error){
+        res.status(400).send(error.message)
+    }
 })
 
 module.exports = connectionRequest;
