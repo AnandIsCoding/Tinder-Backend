@@ -13,8 +13,8 @@ function Feed() {
             <h3 className='text-lg font-semibold'>Male</h3>
             <h3 className='text-lg font-semibold'>21</h3>
             <div className='flex justify-center gap-4'>
-                <button className='px-4 py-2 rounded-lg text-white text-xl font-semibold bg-[red]'>Ignore🐷</button>
-                <button className='px-4 py-2 rounded-lg text-white text-xl font-semibold bg-[blue]'>Interested🌿</button>
+                <button className='px-4 py-2 rounded-lg text-white text-xl font-semibold bg-[red]'>Ignore</button>
+                <button className='px-4 py-2 rounded-lg text-white text-xl font-semibold bg-[blue]'>Interested</button>
             </div>
         </div>
       </div>
