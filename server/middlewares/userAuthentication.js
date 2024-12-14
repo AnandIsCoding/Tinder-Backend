@@ -14,13 +14,13 @@ const userAuthentication = async(req, res, next) =>{
     if(!token) return res.status(404).send('go Signup and login');
     jwt.verify(token, "Anand@Tinder.comstoken" , async (error, decoded) =>{
         if(error){
-            return res.status(404).send('User not found')
+            return res.status(403).json({success:false,message:'Unauthorized access' })
         }
         const {_id} = decoded;
         //find user using id got from decoded
         const userDetails = await User.findById(_id)
         
-        if(!userDetails) return res.status(404).send("User not Found")
+        if(!userDetails) return res.status(404).json({success:false, message:"User not Found"})
 
         // attaching user details of user found with _id of decoded             
         req.user = userDetails;

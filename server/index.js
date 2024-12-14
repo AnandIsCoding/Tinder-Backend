@@ -1,16 +1,28 @@
 const express = require('express')
+const app = express();
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const cors = require('cors');
+const urlencoded = require('express')
 
-const app = express();
+// CORS configuration
+const corsOptions = {
+    origin: 'http://localhost:5173', // replace with your frontend URL
+    credentials: true
+};
+app.use(cors(corsOptions));
+
+
+
 const CookieParser = require('cookie-parser')
 const connectToDb = require("./configs/database")
 
 const {validateSignUpData, validateLogindata} = require('./utils/validation')
-const {userAuthentication} = require('../Tinder/middlewares/userAuthentication')
+const {userAuthentication} = require('./middlewares/userAuthentication')
 
 app.use(express.json());
 app.use(CookieParser())
+app.use(urlencoded({ extended: true }));
 
 //import routers
 const authenticationRouter = require('./routers/authenticationRouter')
@@ -39,12 +51,8 @@ connectToDb()
         console.log('Refresh page or wait for sometime')
     })
 
-app.get('/', (req, res) => {
-        res.send('Home page');
-})
-
 
 app.get('*', (req,res) =>{
-    res.status(404).send('Not Found')
+    res.status(404).send('404 Not Found')
 })
 

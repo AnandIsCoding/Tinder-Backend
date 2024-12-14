@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*{
+   font-family: gilroy;
+}
+
+body{
+   background: black;
+   
+}

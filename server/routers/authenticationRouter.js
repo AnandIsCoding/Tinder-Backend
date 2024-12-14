@@ -33,15 +33,18 @@ authenticationRouter.post('/signup', async (req, res) => {
             gender
         });         
         
-        await user.save(); // Save the user and validate the schema
-        res.status(201).send('Data successfully stored in the database');
+        const userCreated = await user.save(); // Save the user and validate the schema
+        var token = jwt.sign({ _id: user._id }, "Anand@Tinder.comstoken", {expiresIn : '7d'} );
+        res.cookie("token" , token, { expires: new Date(Date.now() + 604800000) })       
+        res.status(201).json({success:true, message:'User registered successfully', user:userCreated , token:token})
+
     } catch (error) {
         if (error.name === 'ValidationError') {
             const messages = Object.values(error.errors).map(err => err.message);
             res.status(400).send(`Validation error: ${messages.join(', ')}`);
         } else {
             // Handle other errors (e.g., database connection issues)
-            res.status(500).send('An error occurred. Please try again later.');
+            res.status(500).json({success:false, message:'An error occurred. Please try again later.'});
         }
         console.log('Error:', error);
     }
@@ -50,9 +53,9 @@ authenticationRouter.post('/signup', async (req, res) => {
 authenticationRouter.post('/login' , async(req,res) =>{
     validateLogindata(req)
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email })
     if(!user){
-        return res.status(404).send('Invalid credentials')
+        return res.status(404).json({success:false, message:'Invalid Credentials'})
     }
     const match = await bcrypt.compare(password, user.password);
     
@@ -60,15 +63,15 @@ authenticationRouter.post('/login' , async(req,res) =>{
         //create a jwt token nd add it to cookie, and send to user
         var token = jwt.sign({ _id: user._id }, "Anand@Tinder.comstoken", {expiresIn : '7d'} );
         res.cookie("token" , token, { expires: new Date(Date.now() + 604800000) })       
-        return res.send('login successfull !!!!!!')
+        return res.status(200).json({message:'Login successfull', success:true, user, token:token})
     }else{
-        return res.status(404).send('Invalid credentials')
+        return res.status(404).json({success:false, message:'Invalid credentials'})
     }
 })
 
 authenticationRouter.post('/logout', async(req,res) =>{
     res.cookie("token" , null , { expires: new Date(Date.now()) }) 
-    res.status(200).send('logout successfull')
+    res.status(200).json({success:true, message:"Logout successfully"})
 })
 
 module.exports =  authenticationRouter
