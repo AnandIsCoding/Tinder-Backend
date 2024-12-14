@@ -10,7 +10,7 @@ const {userAuthentication} = require('../middlewares/userAuthentication')
 
 profileRouter.get('/profile/view', userAuthentication, async(req,res) =>{
     try{
-       
+
         const user = req.user
         res.status(200).send(user)
     }catch(error){

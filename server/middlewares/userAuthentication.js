@@ -1,33 +1,40 @@
 const User = require('../models/user')
 const jwt = require('jsonwebtoken')
 
-const userAuthentication = async(req, res, next) =>{
-    // check if user is authenticated or not by checking if token is present in cookies
-    ////validate jwt token here
-    // if token is not present, return a 403 status and send a message to the user to go signup and login
-    // if token is present, verify it and attach user details to req.user
-    // use middleware next() to continue the execution of the route handler or controller function
-    // next() should be called after verifying token and attaching user details to req.user
-
-
-    const {token} = req.cookies
-    if(!token) return res.status(404).send('go Signup and login');
-    jwt.verify(token, "Anand@Tinder.comstoken" , async (error, decoded) =>{
-        if(error){
-            return res.status(403).json({success:false,message:'Unauthorized access' })
+const userAuthentication = async (req, res, next) => {
+    try {
+        const { token } = req.cookies
+        if (!token) {
+            return res.status(401).json({ success: false, message: 'Unauthorized: Token not found' })
         }
-        const {_id} = decoded;
-        //find user using id got from decoded
+
+        // Verify JWT token
+        const decodedData = jwt.verify(token, `3frbhfu848989333$$4$%^&&%$@#%&*((*&T^$$))`)
+        const _id = decodedData._id
+
+        // Fetch user from DB using the decoded _id
         const userDetails = await User.findById(_id)
-        
-        if(!userDetails) return res.status(404).json({success:false, message:"User not Found"})
 
-        // attaching user details of user found with _id of decoded             
-        req.user = userDetails;
-        
-    next();
+        if (!userDetails) {
+            return res.status(404).json({ success: false, message: "User not found" })
+        }
 
-    })
+        // Attach user details to the request object
+        req.user = userDetails
+
+        return next()
+
+    } catch (error) {
+        console.error('Error in userAuthentication middleware: ', error)
+
+        if (error instanceof jwt.JsonWebTokenError) {
+            // JWT-related errors (e.g., invalid token or expired)
+            return res.status(401).json({ success: false, message: 'Unauthorized: Invalid or expired token' })
+        }
+
+        // General error handling
+        return res.status(500).json({ success: false, message: 'Internal server error' })
+    }
 }
 
 module.exports = {

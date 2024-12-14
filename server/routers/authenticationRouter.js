@@ -34,8 +34,12 @@ authenticationRouter.post('/signup', async (req, res) => {
         });         
         
         const userCreated = await user.save(); // Save the user and validate the schema
-        var token = jwt.sign({ _id: user._id }, "Anand@Tinder.comstoken", {expiresIn : '7d'} );
-        res.cookie("token" , token, { expires: new Date(Date.now() + 604800000) })       
+        var token = jwt.sign({ _id: user._id }, `3frbhfu848989333$$4$%^&&%$@#%&*((*&T^$$))`, {expiresIn : '7d'} );
+        res.cookie("token" , token,  {
+            httpOnly: true,
+            sameSite: "strict",
+            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+          })       
         res.status(201).json({success:true, message:'User registered successfully', user:userCreated , token:token})
 
     } catch (error) {
@@ -61,15 +65,19 @@ authenticationRouter.post('/login' , async(req,res) =>{
     
     if(match) {
         //create a jwt token nd add it to cookie, and send to user
-        var token = jwt.sign({ _id: user._id }, "Anand@Tinder.comstoken", {expiresIn : '7d'} );
-        res.cookie("token" , token, { expires: new Date(Date.now() + 604800000) })       
-        return res.status(200).json({message:'Login successfull', success:true, user, token:token})
+        var token = jwt.sign({ _id: user._id }, `3frbhfu848989333$$4$%^&&%$@#%&*((*&T^$$))`, {expiresIn : '7d'} );
+        res.cookie("token" , token, token,  {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "none",
+            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+          }).json({message:'Login successfull', success:true, user, token:token})
     }else{
         return res.status(404).json({success:false, message:'Invalid credentials'})
     }
 })
 
-authenticationRouter.post('/logout', async(req,res) =>{
+authenticationRouter.delete('/logout', async(req,res) =>{
     res.cookie("token" , null , { expires: new Date(Date.now()) }) 
     res.status(200).json({success:true, message:"Logout successfully"})
 })

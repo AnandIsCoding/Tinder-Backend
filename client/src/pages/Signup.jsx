@@ -1,26 +1,45 @@
 import React, { useState } from 'react'
-
+import {toast} from 'react-hot-toast'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from "react-redux";
+import {addUser} from '../redux/slices/userSlice'
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 function Signup() {
-
+   const dispatch = useDispatch()
+   const navigate = useNavigate()
     const [showPassword, setShowpassword] = useState(false)
     const [isSignupform, setissignupform] = useState(true)
 
     const [firstName, setFirstname] = useState('')
     const [lastName, setLastname] = useState('')
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+    const [email, setEmail] = useState('zebronics@gmail.com')
+    const [password, setPassword] = useState('Zebronics@252021')
     const [gender, setGender] = useState('')
     const [age, setAge] = useState('')
 
-    const handleLoginform = (event) =>{
-        alert('login')
+    const handleLoginform = async(event) =>{
+        event.preventDefault()
+        if(email.trim().length<5) toast.error('Please enter a valid email')
+        // call backend api to login
+      try {
+        const res = await axios.post(`${BACKEND_URL}/login`, {email,password},{withCredentials:true})
+        toast.success(res.data.message)
+        dispatch(addUser(res.data.user))
+        navigate('/')
+
+      } catch (error) {
+        toast.error(error.response.data.message)
+       
+      }  
+        
     }
     const handleSignupform = (event) =>{
         alert('Signup')
     }
 
   return (
-    <div className="py-2 px-5 h-screen flex flex-col justify-between md:w-[35%] md:ml-auto md:mr-auto md:mt-2 md:rounded-xl bg-white md:h-[98vh]">
+    <div className="py-2 px-5 h-screen flex flex-col z-[999] absolute  md:left-[32%] justify-between md:w-[39%] md:ml-auto md:mr-auto md:mt-2 md:rounded-xl bg-white md:h-[98vh]">
     <div>
       <h1 className="text-center text-2xl mb-0 font-bold text-black"> {isSignupform ? 'Signup' : 'Login'} </h1>
       <div className="w-[20vw] h-[20vw] md:w-[6vw] md:h-[6vw] bg-violet-100 ml-auto mr-auto rounded-full ">
@@ -118,7 +137,7 @@ function Signup() {
           onClick={(event) => {isSignupform ? handleSignupform(event) : handleLoginform(event)}}
           className="bg-[#111] text-white font-semibold  rounded-lg px-4 py-2 w-full text-lg placeholder:text-base mt-3 md:mt-5"
         >
-          Create Account
+          {isSignupform ? 'Create Account' : 'Login and continue'}
         </button>
       </form>
 

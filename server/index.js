@@ -7,21 +7,20 @@ const urlencoded = require('express')
 
 // CORS configuration
 const corsOptions = {
-    origin: 'http://localhost:5173', // replace with your frontend URL
-    credentials: true
+    origin: 'http://localhost:5173', // Replace with your frontend URL
+    credentials: true,
 };
 app.use(cors(corsOptions));
 
 
-
-const CookieParser = require('cookie-parser')
+const cookieParser = require("cookie-parser");
 const connectToDb = require("./configs/database")
 
 const {validateSignUpData, validateLogindata} = require('./utils/validation')
 const {userAuthentication} = require('./middlewares/userAuthentication')
 
 app.use(express.json());
-app.use(CookieParser())
+app.use(cookieParser());
 app.use(urlencoded({ extended: true }));
 
 //import routers
