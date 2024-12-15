@@ -11,7 +11,6 @@ const cloudinaryConnect = () => {
             api_key: process.env.CLOUDINARY_API_KEY,
             api_secret: process.env.CLOUDINARY_API_SECRET,
         });
-        //console.log('Cloudinary secrets =>> ', process.env.CLOUDINARY_CLOUD_NAME);
     } catch (error) {
         console.error('Error connecting to Cloudinary:', error);
     }
