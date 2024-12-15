@@ -8,15 +8,43 @@ const User = require('../models/user')
 const {validateSignUpData, validateLogindata} = require('../utils/validation')
 const {userAuthentication} = require('../middlewares/userAuthentication')
 
+const cloudinary = require('cloudinary').v2;
+const dotenv = require('dotenv');
+
+// Load environment variables
+dotenv.config();
+
+async function uploadFiletocloudinary(file, folder){
+    const options = {folder}
+    return await cloudinary.uploader.upload(file.tempFilePath, options)
+}
+async function isFiletypesupported(type, supportedTypes){
+    return supportedTypes.includes(type)
+} 
+
 
 
 authenticationRouter.post('/signup', async (req, res) => {
     const validationResult =  validateSignUpData(req)
     // Validate the user data before saving it to the database
     if(validationResult){
-       res.send(validationResult)
+       return res.status(403).send(validationResult)
     }
-    const { firstName, lastName, email, password, userimage, gender, age} = req.body    
+    const { firstName, lastName, email, password, gender, age,bio} = req.body   
+    
+    const file = req.files.userimage
+    if(!file) return res.status(403).json({success:false, message:"Profile image is required"})
+    if(!bio){
+        return res.status(403).json({success:false, message:"Bio is required and it should contain you mob no"})
+    }
+    //file validation
+    const supportedTypes = ['jpg','jpeg','png']
+    const fileType = file.name.split('.')[1].toLowerCase()
+    if(!isFiletypesupported(fileType, supportedTypes)){
+            return res.status(403).json({success:false, message:'File Type not supported only [jpg jpeg png accepted'})
+    }
+    //if fileType supported
+    const response = await uploadFiletocloudinary(file, "Tinder")
 
     //encrypt password
     const encryptedUserPassword = await bcrypt.hash(password, 10)
@@ -28,9 +56,10 @@ authenticationRouter.post('/signup', async (req, res) => {
             lastName,
             email,
             password : encryptedUserPassword ,
-            userimage,
+            userimage:response.secure_url,
             age,
-            gender
+            gender,
+            bio
         });         
         
         const userCreated = await user.save(); // Save the user and validate the schema
@@ -46,6 +75,7 @@ authenticationRouter.post('/signup', async (req, res) => {
         if (error.name === 'ValidationError') {
             const messages = Object.values(error.errors).map(err => err.message);
             res.status(400).send(`Validation error: ${messages.join(', ')}`);
+            console.log(error)
         } else {
             // Handle other errors (e.g., database connection issues)
             res.status(500).json({success:false, message:'An error occurred. Please try again later.'});

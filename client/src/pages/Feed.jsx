@@ -18,7 +18,8 @@ function Feed() {
       setLoading(true);
       const res = await axios.get(`${BACKEND_URL}/feed`, { withCredentials: true });
       dispatch(setFeed(res.data?.data || []));
-      toast.success(res.data.message);
+      if(feed.length > 0) toast.success(res.data.message);
+      if(feed.length <= 0) toast.success('No users found for feed');
     } catch (error) {
       console.error(error);
       toast.error("Failed to fetch feed.");
@@ -34,7 +35,9 @@ function Feed() {
   const sendRequest = async (status, id) => {
     try {
       const res = await axios.post(`${BACKEND_URL}/request/send/${status}/${id}`, {}, { withCredentials: true });
-      toast.success(res.data.message);
+      // toast.success(res.data.message);
+      if(status === 'interested') toast.success('Interested connection sent');
+      if(status === 'rejected') toast.success('Ignored user');
       dispatch(removeFromFeed(id));
     } catch (error) {
       console.error(error);

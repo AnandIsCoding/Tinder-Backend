@@ -32,6 +32,10 @@ const userAuthentication = async (req, res, next) => {
             return res.status(401).json({ success: false, message: 'Unauthorized: Invalid or expired token' })
         }
 
+        if (error.code === 'ECONNRESET') {
+            return res.status(500).json({ success: false, message: 'Internal server error: Connection reset' })
+        }
+
         // General error handling
         return res.status(500).json({ success: false, message: 'Internal server error' })
     }

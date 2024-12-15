@@ -9,7 +9,7 @@ connectionRequest.post('/request/send/:status/:receiverId', userAuthentication, 
     const { status, receiverId } = req.params;
 
     // Validate status
-    if (['accepted', 'rejected'].includes(status)) {
+    if (!['interested', 'rejected'].includes(status)) {
       return res.status(400).json({ message: 'Invalid status for sending a request.' });
     }
 

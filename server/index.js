@@ -4,6 +4,11 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const cors = require('cors');
 const urlencoded = require('express')
+const dotenv = require('dotenv')
+const fileupload = require('express-fileupload')
+const cloudinary = require('cloudinary')
+
+dotenv.config()
 
 // CORS configuration
 const corsOptions = {
@@ -22,6 +27,16 @@ const {userAuthentication} = require('./middlewares/userAuthentication')
 app.use(express.json());
 app.use(cookieParser());
 app.use(urlencoded({ extended: true }));
+app.use(fileupload({
+    useTempFiles: true,
+    tempFileDir:'/temp'
+}))
+
+
+// cloudinary function enter here
+const {cloudinaryConnect} = require('./configs/cloudinary')
+cloudinaryConnect()
+
 
 //import routers
 const authenticationRouter = require('./routers/authenticationRouter')

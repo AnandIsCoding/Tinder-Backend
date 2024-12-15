@@ -3,11 +3,12 @@ import { useSelector } from 'react-redux'
 import { NavLink, useNavigate } from 'react-router-dom'
 function Profile() {
   const user = useSelector(store => store.user)
+  if(!user) return <h1 className='text-white text-xl absolute top-[15%]'>Unable to fetch your profile data</h1>
   return (
     <div className='text-white absolute top-[5vw] left-0 right-0 bottom-0  flex justify-center items-center px-2 '>
        <div className='w-full md:w-[35vw] h-[83vh] md:h-[85vh] bg-zinc-100 absolute top-[15vw] md:top-[0vw] text-black md:rounded-xl'> 
        <div className='w-full h-[65%] rounded-t-xl bg-pink-200 '>
-          <img src="https://png.pngtree.com/png-clipart/20231019/original/pngtree-user-profile-avatar-png-image_13369988.png" alt='user_image' className='w-full h-full object-cover' />
+          <img src={user ? user.userimage : "https://png.pngtree.com/png-clipart/20231019/original/pngtree-user-profile-avatar-png-image_13369988.png"} alt='user_image' className='w-full h-full object-cover' />
         </div>
         <div className='details p-4'>
           <div className='flex gap-2'>

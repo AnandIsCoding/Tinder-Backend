@@ -10,7 +10,7 @@ userRouter.get('/user/requests/received', userAuthentication, async (req, res) =
         const connectionRequests = await connectionModel.find({
             receiverId: loggedInUser._id,
             status: 'interested',
-        }).populate("senderId", " firstName lastName age gender userimage ")
+        }).populate("senderId", " firstName lastName age gender userimage bio")
 
         res.status(200).json({
             message: 'Connection requests fetched successfully',
@@ -30,8 +30,8 @@ userRouter.get('/user/requests/connections', userAuthentication, async (req, res
                 { status: 'accepted', senderId: loggedInUser._id },
                 { status: 'accepted', receiverId: loggedInUser._id }
             ]
-        }).populate('senderId', 'firstName lastName age gender userimage')
-          .populate('receiverId', 'firstName lastName age gender userimage');
+        }).populate('senderId', 'firstName lastName age gender userimage bio')
+          .populate('receiverId', 'firstName lastName age gender userimage bio');
 
         // Create an array to store connection details
         const connectionsData = allConnections.map(connection => {
@@ -76,7 +76,7 @@ userRouter.get("/feed", userAuthentication, async (req, res) => {
           { _id: { $ne: loggedInUser._id } },
         ],
       })
-        .select("firstName lastName userimage age gender about skills")
+        .select("firstName lastName userimage age gender about skills bio")
         .skip(skip)
         .limit(limit);
   

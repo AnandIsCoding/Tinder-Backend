@@ -1,7 +1,7 @@
 const validator = require('validator');
 
 function validateSignUpData(req) {
-    const { firstName, lastName, email, password, userimage, age, gender } = req.body;
+    const { firstName, lastName, email, password,  age, gender } = req.body;
 
     // Validate first name and last name
     if (!firstName || !lastName) {
@@ -28,15 +28,16 @@ function validateSignUpData(req) {
         return 'Password should be strong: at least 8 characters long, contain at least 1 lowercase, 1 uppercase, 1 number, and 1 special character.';
     }
 
-    // Validate user image URL
-    if (!validator.isURL(userimage)) {
-        return 'User image URL is not valid';
-    }
+   // Validate user image (ensure the file exists and has an appropriate name/type)
+if (!req.files || !req.files.userimage) {
+    return 'User image file is required';
+}
 
-    // Validate age (assuming it's a required field and should be a number greater than 0)
-    if (!age || !Number.isInteger(age) || age <= 0) {
-        return 'Age is required and must be a positive integer';
-    }
+// Validate age
+if (!age || isNaN(age) || parseInt(age) <= 0) {
+    return 'Age is required and must be a positive number';
+}
+
 
     // Validate gender (assuming it’s required and limited to "male" or "female")
     if (!gender || !['male', 'female', 'others'].includes(gender.toLowerCase())) {
