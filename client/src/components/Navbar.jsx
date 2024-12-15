@@ -1,11 +1,14 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { removeUser } from '../redux/slices/userSlice'
 import toast from 'react-hot-toast'
 import axios from 'axios'
+import { GiHamburgerMenu } from "react-icons/gi";
+import { IoMdClose } from "react-icons/io";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 function Navbar() {
+  const [openPanel, setOpenpanel] = useState(false)
   const user = useSelector(store => store.user)
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -55,11 +58,30 @@ function Navbar() {
           Welcome {user ? user.firstName : 'User'}
         </h1>
         <img src={user ? user.userimage : 'https://img.freepik.com/free-vector/follow-me-social-business-theme-design_24877-52233.jpg?semt=ais_hybrid'} alt='user_image' className='w-[3.2vw] h-[3.2vw] rounded-xl mt-[-0.6vw] ' />
-        <NavLink to='/login' className="text-sm font-normal text-white cursor-pointer  hover:scale-110 duration-[0.3s]">
-          login
-        </NavLink>
+        <h1 className=' cursor-pointer text-white text-xl font-bold hidden md:flex'> {!openPanel ? <GiHamburgerMenu size={28} className='mt-0 mr-[-4]' onClick={()=> setOpenpanel(prev => !prev)}/> : <IoMdClose size={28} className='mt-0 mr-[-4]' onClick={()=> setOpenpanel(prev => !prev)}/>  } </h1>
       </div>
 
+      <h1 className='cursor-pointer text-white text-xl font-bold md:hidden'> {!openPanel ? <GiHamburgerMenu size={28} className='mt-6' onClick={()=> setOpenpanel(prev => !prev)}/> : <IoMdClose size={28} className='mt-6' onClick={()=> setOpenpanel(prev => !prev)}/>  } </h1>
+
+      {
+  openPanel && (
+    <div
+      className={`absolute top-0 h-[100vh] sidepanel ${
+        openPanel ? 'w-[60%]' : 'w-[0%]'
+      } bottom-0 left-0 right-0 bg-white transition-all px-2 py-3 flex flex-col gap-2 md:w-[20%]`}
+    >
+    
+        <NavLink to='/profile' className='w-full px-5 py-2 rounded-lg bg-black text-white text-xl font-semibold text-center' onClick={()=>setOpenpanel(false)}>Profile</NavLink>
+        <NavLink to='/requestsreceived' className='w-full px-5 py-2 rounded-lg bg-black text-white text-xl font-semibold text-center' onClick={()=>setOpenpanel(false)}>All Requests</NavLink>
+        <NavLink to='/connections' className='w-full px-5 py-2 rounded-lg bg-black text-white text-xl font-semibold text-center' onClick={()=>setOpenpanel(false)}>My Connections</NavLink>
+        <NavLink to='/login' className='w-full px-5 py-2 rounded-lg bg-black text-white text-xl font-semibold text-center' onClick={()=>setOpenpanel(false)}>Another account</NavLink>
+        <NavLink to='/' className='w-full px-5 py-2 rounded-lg bg-black text-white text-xl font-semibold text-center' onClick={()=>setOpenpanel(false)}>Feed</NavLink>
+        <NavLink onClick={handleLogout} className='w-full px-5 py-2 rounded-lg bg-black text-white text-xl font-semibold text-center' >Logout</NavLink>
+        
+        
+    </div>
+  )
+}
 
 
      

@@ -1,98 +1,86 @@
-const express = require('express')
-const {userAuthentication} = require('../middlewares/userAuthentication')
-//import model
-const connectionModel = require('../models/connection')
-const connectionRequest = express.Router()
+const express = require('express');
+const { userAuthentication } = require('../middlewares/userAuthentication');
+const connectionModel = require('../models/connection');
+const connectionRequest = express.Router();
 
-connectionRequest.post('/request/send/:status/:receiverId', userAuthentication , async(req, res) =>{
-    
-   try{
-        const senderId = req.user._id;
-        const {status, receiverId} = req.params;
-        // create instanse 
-        const newConnection = new connectionModel({
-            senderId,
-            receiverId,
-            status
-        }) 
+connectionRequest.post('/request/send/:status/:receiverId', userAuthentication, async (req, res) => {
+  try {
+    const senderId = req.user._id;
+    const { status, receiverId } = req.params;
 
-        //check if status is other than interested or ignore than return
-        if((status === 'accepted') || (status === 'rejected')) return res.status(500).json({message : 'bad status '})
-        
-        //check if sender and receiver is same than return
+    // Validate status
+    if (['accepted', 'rejected'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid status for sending a request.' });
+    }
 
-        if (senderId.toString() === receiverId.toString()) {
-            
-            return res.status(400).json({ message: 'Bad Request: Sender and Receiver cannot be the same.' });
-        }
+    // Prevent self-connections
+    if (senderId.toString() === receiverId.toString()) {
+      return res.status(400).json({ message: 'Sender and Receiver cannot be the same.' });
+    }
 
+    // Check if request already exists
+    const existingRequest = await connectionModel.findOne({
+      $or: [
+        { senderId, receiverId },
+        { senderId: receiverId, receiverId: senderId },
+      ],
+    });
 
-        //check if receiver or sender is already in db
-        const checkAlreadyStored = await connectionModel.findOne({
-            $or: [
-                {senderId: senderId, receiverId: receiverId},
-                {senderId: receiverId, receiverId: senderId}
-            ]
-        })    
-        
-        if(checkAlreadyStored) return res.status(500).json({message : 'Request already sent'})
+    if (existingRequest) {
+      return res.status(400).json({ message: 'Request already exists.' });
+    }
 
-        // save connectiondetails in database
-            const savedConnection = await newConnection.save()
-             res.json({
-                message:'connection sent successfully', 
-                savedConnection
-             })
-   }
-   catch(err){
-       res.send(err.message)
-   }
-})
+    // Create and save the new connection request
+    const newConnection = new connectionModel({
+      senderId,
+      receiverId,
+      status,
+    });
+    const savedConnection = await newConnection.save();
 
-connectionRequest.post('/request/review/:status/:requestId', userAuthentication, async(req,res) =>{
-    try{
-        const loggedInUser = req.user;
-        const {status, requestId} = req.params;
+    res.status(201).json({
+      message: 'Connection request sent successfully.',
+      data: savedConnection,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error.' });
+  }
+});
 
-        //check for valid status
-        let allowedStatus = ['accepted' , 'rejected']
-        if (!allowedStatus.includes(status)) {
-            return res.status(400).json({ message: 'Invalid status. Please choose between "interested", "ignore", "accepted", or "rejected".' });
-        }
+connectionRequest.post('/request/review/:status/:requestId', userAuthentication, async (req, res) => {
+  try {
+    const loggedInUser = req.user;
+    const { status, requestId } = req.params;
 
-        const conectionRequestReview = await connectionModel.findOne({
-            _id: requestId,
-            receiverId: loggedInUser._id,
-            status:"interested"
-        })
+    // Validate status
+    if (!['accepted', 'rejected'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid status. Use "accepted" or "rejected".' });
+    }
 
-       // Find the connection request
-       const connectionRequestReview = await connectionModel.findOne({
-        _id: requestId,
-        receiverId: loggedInUser._id,
-        status: 'interested' // Only allow reviewing requests with "interested" status
+    // Find and validate the connection request
+    const connectionRequestReview = await connectionModel.findOne({
+      _id: requestId,
+      receiverId: loggedInUser._id,
+      status: 'interested',
     });
 
     if (!connectionRequestReview) {
-        return res.status(404).json({ message: 'Connection request not found or already reviewed.' });
+      return res.status(404).json({ message: 'Connection request not found or already reviewed.' });
     }
 
-    // Update the status
+    // Update status and save
     connectionRequestReview.status = status;
+    const updatedConnection = await connectionRequestReview.save();
 
-    // Save the updated connection request
-    const updatedConnectionRequest = await connectionRequestReview.save();
-
-    // Respond with success
-    res.json({
-        message: 'Review submitted successfully',
-        data: updatedConnectionRequest
+    res.status(200).json({
+      message: `Connection request ${status} successfully.`,
+      data: updatedConnection,
     });
-        
-    }catch(error){
-        res.status(400).send(error.message)
-    }
-})
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error.' });
+  }
+});
 
 module.exports = connectionRequest;
-

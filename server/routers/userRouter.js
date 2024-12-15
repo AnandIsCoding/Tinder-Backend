@@ -76,11 +76,11 @@ userRouter.get("/feed", userAuthentication, async (req, res) => {
           { _id: { $ne: loggedInUser._id } },
         ],
       })
-        .select("firstName lastName photoUrl age gender about skills")
+        .select("firstName lastName userimage age gender about skills")
         .skip(skip)
         .limit(limit);
   
-      res.json({ data: users });
+      res.status(200).json({message:'Feed fetched successfully', data: users });
     } catch (err) {
       res.status(400).json({ message: err.message });
     }

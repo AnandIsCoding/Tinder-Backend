@@ -12,6 +12,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import {addUser} from './redux/slices/userSlice'
+import Editprofile from './pages/Editprofile'
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 function App() {
@@ -55,12 +56,13 @@ function App() {
     }>
       <Navbar/>
        <Routes>
-        <Route path='/' element={<Feed/>} />
+        <Route path='/' element={user ? <Feed/> : <Signup/>} />
         <Route path='/login' element={ <Signup/>} />
-        <Route path='/profile' element={<Profile/>} />
-        <Route path='/connections' element={<Connections/>} />
+        <Route path='/profile' element={ user && <Profile/>} />
+        <Route path='/connections' element={user && <Connections/>} />
         <Route path='/requestsreceived' element={<AllRequests/>} />
-        <Route path='*' element={<NotFound/>} />
+        <Route path='/edit-profile' element={<Editprofile/>} />
+        <Route path='*' element={user && <NotFound/>} />
         
        </Routes>
       <Footer/>
