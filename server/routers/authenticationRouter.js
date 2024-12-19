@@ -61,9 +61,10 @@ authenticationRouter.post('/signup', async (req, res) => {
             gender,
             bio
         });         
+       
         
         const userCreated = await user.save(); // Save the user and validate the schema
-        var token = jwt.sign({ _id: user._id }, `3frbhfu848989333$$4$%^&&%$@#%&*((*&T^$$))`, {expiresIn : '7d'} );
+        var token = jwt.sign({ _id: user._id }, process.env.SECRET_KEY , {expiresIn : '7d'} );
         res.cookie("token" , token,  {
             httpOnly: true,
             sameSite: "strict",
@@ -95,7 +96,7 @@ authenticationRouter.post('/login' , async(req,res) =>{
     
     if(match) {
         //create a jwt token nd add it to cookie, and send to user
-        var token = jwt.sign({ _id: user._id }, `3frbhfu848989333$$4$%^&&%$@#%&*((*&T^$$))`, {expiresIn : '7d'} );
+        var token = jwt.sign({ _id: user._id },  process.env.SECRET_KEY, {expiresIn : '7d'} );
         res.cookie("token" , token, token,  {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",

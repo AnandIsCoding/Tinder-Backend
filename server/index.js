@@ -12,7 +12,7 @@ dotenv.config()
 
 // CORS configuration
 const corsOptions = {
-    origin: 'http://localhost:5173', // Replace with your frontend URL
+    origin: ['http://localhost:5173','http://localhost:5174'], // Replace with your frontend URL
     credentials: true,
 };
 app.use(cors(corsOptions));
@@ -63,6 +63,7 @@ connectToDb()
     .catch((err) =>{
         console.log('database connection failed')
         console.log('Refresh page or wait for sometime')
+        console.log(err)
     })
 
 

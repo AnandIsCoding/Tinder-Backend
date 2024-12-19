@@ -1,5 +1,7 @@
 const User = require('../models/user')
 const jwt = require('jsonwebtoken')
+const dotenv = require('dotenv')
+dotenv.config()
 
 const userAuthentication = async (req, res, next) => {
     try {
@@ -9,7 +11,7 @@ const userAuthentication = async (req, res, next) => {
         }
 
         // Verify JWT token
-        const decodedData = jwt.verify(token, `3frbhfu848989333$$4$%^&&%$@#%&*((*&T^$$))`)
+        const decodedData = jwt.verify(token,  process.env.SECRET_KEY)
         const _id = decodedData._id
 
         // Fetch user from DB using the decoded _id
