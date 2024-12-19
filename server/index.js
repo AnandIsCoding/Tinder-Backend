@@ -13,7 +13,7 @@ dotenv.config()
 
 // CORS configuration
 const corsOptions = {
-    origin: ['http://localhost:5173','http://localhost:5174'], // Replace with your frontend URL
+    origin: "https://lovefinder.onrender.com" ,// Replace with your frontend URL
     credentials: true,
 };
 
