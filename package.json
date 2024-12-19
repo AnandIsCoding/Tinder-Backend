@@ -4,7 +4,9 @@
   "description": "starting backend journey with node express and mongoose",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index.js"
+    "dev": "nodemon server/index.js",
+    "start": "nodemon server/index.js",
+    "build": "npm install && npm install --prefix client && npm run build --prefix client"
   },
   "keywords": [
     "node",

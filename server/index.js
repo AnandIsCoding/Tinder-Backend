@@ -7,6 +7,7 @@ const urlencoded = require('express')
 const dotenv = require('dotenv')
 const fileupload = require('express-fileupload')
 const cloudinary = require('cloudinary')
+const path = require('path')
 
 dotenv.config()
 
@@ -15,6 +16,8 @@ const corsOptions = {
     origin: ['http://localhost:5173','http://localhost:5174'], // Replace with your frontend URL
     credentials: true,
 };
+
+const _dirname = path.resolve()
 app.use(cors(corsOptions));
 
 
@@ -51,6 +54,11 @@ app.use('/', profileRouter)
 app.use('/', connectionRequest)
 app.use('/', userRouter)
 
+app.use(express.static(path.join(_dirname, "/client/dist")))
+app.get('*',(_,res)=>{
+  res.sendFile(path.resolve(_dirname, "client", "dist", "index.html"))
+})
+
 
 
 connectToDb()
@@ -67,7 +75,6 @@ connectToDb()
     })
 
 
-app.get('*', (req,res) =>{
-    res.status(404).send('404 Not Found')
-})
+   
+
 
