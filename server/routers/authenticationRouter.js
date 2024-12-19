@@ -75,7 +75,7 @@ authenticationRouter.post('/signup', async (req, res) => {
     } catch (error) {
         if (error.name === 'ValidationError') {
             const messages = Object.values(error.errors).map(err => err.message);
-            res.status(400).send(`Validation error: ${messages.join(', ')}`);
+            res.status(400).json({message:Object.values(error.errors).map(err => err.message), success:false});
             console.log(error)
         } else {
             // Handle other errors (e.g., database connection issues)

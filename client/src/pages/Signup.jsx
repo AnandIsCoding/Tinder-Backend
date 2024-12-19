@@ -68,7 +68,11 @@ function Signup() {
       console.log(res)
     } catch (error) {
       console.log(error)
-      toast.error(error.response.data.message)
+      if (error.response && error.response.data) {
+        toast.error(error.response.data); // Show error toast if response exists
+      } else {
+        toast.error("An unexpected error occurred!"); // Show fallback message
+      }
       setIsloading(false)
     }
   };
