@@ -36,9 +36,9 @@ function Navbar() {
     <div className="fixed flex w-full h-[10vh] backdrop-blur-2xl z-[10]">
       <NavLink
         to="/"
-        className="w-[40%] h-full text-3xl md:text-4xl font-semibold px-5 py-5 text-white cursor-pointer"
+        className="w-[43%] h-full text-3xl md:text-4xl font-semibold px-5 py-5 text-white cursor-pointer"
       >
-        💘inder
+        ❤️Finder
       </NavLink>
 
       <div className="w-[30%] h-full  justify-between py-7 text-white hidden md:flex ">
