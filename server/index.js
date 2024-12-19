@@ -57,10 +57,14 @@ app.use('/', connectionRequest);
 app.use('/', userRouter);
 
 // Serve React frontend
-app.use(express.static(path.resolve(__dirname, 'client', 'dist')));
+// Serve React frontend
+app.use(express.static(path.resolve(__dirname, '..', 'client', 'dist')));
+
+// This sends all other requests to the React app's index.html (single-page application routing)
 app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'client', 'dist', 'index.html'));
+    res.sendFile(path.resolve(__dirname, '..', 'client', 'dist', 'index.html'));
 });
+
 
 // Database connection and server start
 
