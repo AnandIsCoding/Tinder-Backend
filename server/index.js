@@ -63,13 +63,13 @@ app.get('*', (req, res) => {
 });
 
 // Database connection and server start
-const PORT = process.env.PORT || 3000;
+
 
 connectToDb()
     .then(() => {
         console.log('Database connection established');
-        app.listen(PORT, () => {
-            console.log(`Server is listening at http://localhost:${PORT}`);
+        app.listen(3000, () => {
+            console.log(`Server is listening at http://localhost:3000}`);
         });
     })
     .catch((err) => {
