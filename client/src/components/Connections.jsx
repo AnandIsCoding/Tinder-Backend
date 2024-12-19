@@ -41,7 +41,7 @@ function Connections() {
           <div key={item._id} className="min-h-[6vw] w-[100%] rounded-lg md:w-[40%] flex items-center mx-auto bg-white">
             <div className="w-[28%] min-h-[100%] rounded-lg">
               <img
-                src="https://img.freepik.com/free-photo/indian-man-smiling-mockup-psd-cheerful-expression-closeup-portra_53876-143269.jpg?t=st=1734190014~exp=1734193614~hmac=acb9e85f129d51ca0ae2e0dbe79e9b26036a566f889a395ff8a45bfd38c9694b&w=900"
+                src={item?.userimage}
                 alt="requester_image"
                 className="w-full h-full object-cover rounded-l-lg"
               />
