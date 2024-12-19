@@ -34,7 +34,7 @@ function Feed() {
 
   const sendRequest = async (status, id) => {
     try {
-      const res = await axios.post(`${BACKEND_URL}/request/send/${status}/${id}`, {}, { withCredentials: true });
+      const res = await axios.post(`https://lovefinder.onrender.com/request/send/${status}/${id}`, {}, { withCredentials: true });
       // toast.success(res.data.message);
       if(status === 'interested') toast.success('Interested connection sent');
       if(status === 'rejected') toast.success('Ignored user');
