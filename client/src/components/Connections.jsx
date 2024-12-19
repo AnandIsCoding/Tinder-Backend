@@ -14,8 +14,8 @@ function Connections() {
 
   const fetchConnections = async () => {
     try {
-      const response = await axios.get(`https://lovefinder.onrender.com/signup/user/requests/connections`, { withCredentials: true });
-      console.log(response.data.data); // Log the fetched data
+      const response = await axios.get(`https://lovefinder.onrender.com/user/requests/connections`, { withCredentials: true });
+      console.log(response); // Log the fetched data
       dispatch(addConnection(response.data.data));
     } catch (error) {
       console.error(error);
