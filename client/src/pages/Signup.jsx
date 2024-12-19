@@ -29,7 +29,7 @@ function Signup() {
     // call backend api to login
     try {
       const res = await axios.post(
-        `${BACKEND_URL}/login`,
+        `https://lovefinder.onrender.com/login`,
         { email, password },
         { withCredentials: true }
       );
@@ -57,7 +57,7 @@ function Signup() {
     formData.append('userimage',userimage)
     try {
       const res = await axios.post(
-        `${BACKEND_URL}/signup`,
+        `https://lovefinder.onrender.com/signup`,
         formData,
         { withCredentials: true }
       );

@@ -14,7 +14,7 @@ function Navbar() {
   const dispatch = useDispatch();
   const handleLogout = async () => {
     try {
-      const res = await axios.delete(`${BACKEND_URL}/logout`, {
+      const res = await axios.delete(`https://lovefinder.onrender.com/logout`, {
         withCredentials: true,
       });
 

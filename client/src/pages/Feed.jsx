@@ -16,7 +16,7 @@ function Feed() {
   const fetchFeed = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${BACKEND_URL}/feed`, { withCredentials: true });
+      const res = await axios.get(`https://lovefinder.onrender.com/feed`, { withCredentials: true });
       dispatch(setFeed(res.data?.data || []));
       if(feed.length > 0) toast.success(res.data.message);
       if(feed.length <= 0) toast.success('No users found for feed');

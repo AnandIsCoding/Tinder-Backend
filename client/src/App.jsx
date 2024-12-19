@@ -26,7 +26,7 @@ function App() {
 
   const CheckLoggedin = async() =>{
     try {
-      const res = await axios.get(`${BACKEND_URL}/profile/view`, {
+      const res = await axios.get(`https://lovefinder.onrender.com/profile/view`, {
         withCredentials: true,
         headers: { 'Content-Type': 'application/json' }
       });      

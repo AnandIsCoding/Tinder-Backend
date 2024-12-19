@@ -10,7 +10,7 @@ function Connections() {
   const connections = useSelector(store => store.connection)
   const fetchConnections = async(req,res) =>{
     try {
-      const res = await axios.get(`${BACKEND_URL}/user/requests/connections`, {withCredentials:true})
+      const res = await axios.get(`https://lovefinder.onrender.com/user/requests/connections`, {withCredentials:true})
      console.log(res.data.data)
      dispatch(addConnection(res.data.data))
       

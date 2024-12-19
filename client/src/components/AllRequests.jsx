@@ -11,7 +11,7 @@ function AllRequests() {
   const request = useSelector(store => store.request)
   const fetchRequests = async(req,res) =>{
     try {
-      const res = await axios.get(`${BACKEND_URL}/user/requests/received`, {withCredentials:true})
+      const res = await axios.get(`https://lovefinder.onrender.com/user/requests/received`, {withCredentials:true})
       dispatch(addRequest(res.data.data))
       
     } catch (error) {
@@ -29,7 +29,7 @@ function AllRequests() {
       console.log("Request ID:", _id);
       
       const res = await axios.post(
-        `${BACKEND_URL}/request/review/${status}/${_id}`, 
+        `https://lovefinder.onrender.com/request/review/${status}/${_id}`, 
         {}, 
         { withCredentials: true }
       );
