@@ -4,8 +4,8 @@
   "description": "starting backend journey with node express and mongoose",
   "main": "index.js",
   "scripts": {
+    "start": "node server/index.js",
     "dev": "nodemon server/index.js",
-    "start": "nodemon server/index.js",
     "build": "npm install && npm install --prefix client && npm run build --prefix client"
   },
   "keywords": [
@@ -16,7 +16,7 @@
     "backend",
     "mern"
   ],
-  "author": "Anand jha",
+  "author": "Anand Jha",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
